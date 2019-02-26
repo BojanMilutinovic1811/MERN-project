@@ -15,7 +15,15 @@ mongoose.connect(db, {
 const app = express();
 
 
-app.use('/api/usersAuth', usersAuth);
+
+// body parser middleware
+app.use(express.json())
+app.use(express.urlencoded({
+    extended: false
+}))
+
+
+app.use('/api/users', usersAuth);
 app.use('/api/profile', profile);
 app.use('/api/posts', posts)
 
