@@ -4,7 +4,9 @@ const router = express.Router()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const secret = require('../../config/keys').secret
-
+const passport = require('passport')
+const validateRegisterInput = require('../../validation/register')
+const validateLoginInput = require('../../validation/login')
 
 router.get('/test', (req, res) => {
     res.send('userauth test working')
@@ -15,15 +17,23 @@ router.get('/test', (req, res) => {
 // @access public
 
 router.post('/register', (req, res) => {
+    const {
+        errors,
+        isValid
+    } = validateRegisterInput(req.body)
+
+
+    if (!isValid) {
+        return res.status(400).json(errors)
+    }
 
     User.findOne({
             email: req.body.email
         })
         .then(user => {
             if (user) {
-                return res.status(400).json({
-                    email: 'email already exists'
-                })
+                errors.email = 'Email already exists'
+                return res.status(400).json(errors)
             } else {
 
                 const newUser = new User({
@@ -49,6 +59,16 @@ router.post('/register', (req, res) => {
 // @access public
 
 router.post('/login', (req, res) => {
+
+    const {
+        errors,
+        isValid
+    } = validateLoginInput(req.body)
+
+    if (!isValid) {
+        return res.status(400).json(errors)
+    }
+
     const email = req.body.email;
     const password = req.body.password;
 
@@ -57,9 +77,8 @@ router.post('/login', (req, res) => {
         })
         .then(user => {
             if (!user) {
-                return res.status(400).json({
-                    msg: 'User not found!'
-                })
+                errors.email = 'User not found!'
+                return res.status(400).json(errors)
             }
 
             bcrypt.compare(password, user.password)
@@ -80,13 +99,24 @@ router.post('/login', (req, res) => {
                                 })
                             })
                     } else {
-                        return res.status(400).json({
-                            msg: 'Wrong password!'
-                        })
+                        errors.password = 'Wrong password!'
+                        return res.status(400).json(password)
                     }
                 })
-
         })
+})
+
+//@route api/users/current
+//@access private 
+
+router.get('/current', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
+    res.json({
+        id: req.user.id,
+        name: req.user.name,
+        email: req.user.email
+    })
 })
 
 

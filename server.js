@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const db = require('./config/keys').mongoURI
+const passport = require('passport')
 
 const posts = require('./routes/api/posts');
 const profile = require('./routes/api/profile');
@@ -22,6 +23,12 @@ app.use(express.urlencoded({
     extended: false
 }))
 
+
+// passport middleware
+app.use(passport.initialize())
+
+// passport config 
+require('./config/passport')(passport)
 
 app.use('/api/users', usersAuth);
 app.use('/api/profile', profile);
