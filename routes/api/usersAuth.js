@@ -17,11 +17,12 @@ router.get('/test', (req, res) => {
 // @access public
 
 router.post('/register', (req, res) => {
+    console.log(req.body);
     const {
         errors,
         isValid
     } = validateRegisterInput(req.body)
-
+    console.log(errors, isValid);
 
     if (!isValid) {
         return res.status(400).json(errors)
@@ -31,17 +32,19 @@ router.post('/register', (req, res) => {
             email: req.body.email
         })
         .then(user => {
+            console.log(user);
             if (user) {
                 errors.email = 'Email already exists'
                 return res.status(400).json(errors)
             } else {
-
+                console.log('there is no user with that email');
                 const newUser = new User({
                     name: req.body.name,
                     email: req.body.email,
                     password: req.body.password,
                     avatar: `https://api.adorable.io/avatars/200/${req.body.email}.png`
                 })
+
 
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
