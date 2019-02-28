@@ -5,12 +5,10 @@ const isEmpty = require('./is-empty')
 const validateLoginInputData = data => {
     let errors = {}
 
-    console.log(data)
 
     data.email = !isEmpty(data.email) ? data.email : ''
     data.password = !isEmpty(data.password) ? data.password : ''
-    console.log(data)
-    console.log(typeof data.password);
+
 
 
     if (Validator.isEmpty(data.email)) {
@@ -32,7 +30,6 @@ const validateLoginInputData = data => {
         errors.password = 'Password must be at least 6 characters!'
     }
 
-    console.log(errors)
 
     return {
         errors,

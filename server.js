@@ -1,14 +1,16 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const db = require('./config/keys').mongoURI
+const database = require('./config/keys').mongoURI
 const passport = require('passport')
 
+
+// routes 
 const posts = require('./routes/api/posts');
 const profile = require('./routes/api/profile');
 const usersAuth = require('./routes/api/usersAuth');
 
 
-mongoose.connect(db, {
+mongoose.connect(database, {
     useNewUrlParser: true
 }, () => console.log('data base connected'))
 

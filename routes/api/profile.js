@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const mongoose = require('mongoose')
 const passport = require('passport')
+const validateProfileInputData = require('../../validation/profile')
 
 
 const User = require('../../models/User')
@@ -21,6 +22,7 @@ router.get('/', passport.authenticate('jwt', {
     Profile.findOne({
             user: req.user.id
         })
+        .populate('DevUser', ['name', 'avatar'])
         .then(profile => {
             if (!profile) {
                 errors.noprofile = 'There is no profile for this user'
@@ -39,6 +41,17 @@ router.get('/', passport.authenticate('jwt', {
 router.post('/', passport.authenticate('jwt', {
     session: false
 }), (req, res) => {
+
+    const {
+        errors,
+        isValid
+    } = validateProfileInputData(req.body);
+
+    // validation
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
     const profileFields = {}
 
     profileFields.user = req.user.id
@@ -66,15 +79,32 @@ router.post('/', passport.authenticate('jwt', {
         })
         .then(profile => {
             if (profile) {
+                //update
                 Profile.findOneAndUpdate({
-                    user: req.user.id
-                }, {
-                    $set: profileFields
-                }, {
-                    new: true
-                })
+                        user: req.user.id
+                    }, {
+                        $set: profileFields
+                    }, {
+                        new: true
+                    })
+                    .then(profile => res.json(profile))
             } else {
+                //create
 
+
+                //check if handle exists
+                Profile.findOne({
+                        handle: profileFields.handle
+                    })
+                    .then(profile => {
+                        if (profile) {
+                            errors.handle = 'That handle already exists.'
+                            res.status(400).json(errors)
+                        }
+
+                        //save profile
+                        new Profile(profileFields).save().then(profile => res.json(profile))
+                    })
             }
         })
 })
