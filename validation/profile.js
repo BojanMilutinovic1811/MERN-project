@@ -25,9 +25,10 @@ const validateProfileInputData = data => {
         errors.status = 'Status field is required'
     }
 
-    if (Validator.isEmpty(data.skils)) {
+    if (Validator.isEmpty(data.skills)) {
         errors.skills = 'Skills field is required'
     }
+
     const invalidURL = 'Not a valid URL!'
 
     if (!isEmpty(data.website)) {
