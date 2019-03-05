@@ -1,18 +1,27 @@
-import React, { Component } from 'react';
-import Header from './components/Header';
-import Landing from './components/Landing'
-import Footer from './components/Footer'
+import React, { Component } from 'react'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import Header from './components/layout/Header'
+import Landing from './components/layout/Landing'
+import Footer from './components/layout/Footer'
+import Login from './components/auth/Login'
+import Register from './components/auth/Register'
 
 class App extends Component {
-  render() {
+  render () {
     return (
-      <div className="App">
-      <Header/>
-      <Landing/>
-      <Footer/>
-      </div>
-    );
+      <Router>
+        <div className='App'>
+          <Header />
+          <Route exact path='/' component={Landing} />
+          <div className='container'>
+            <Route exact path='/register' component={Register} />
+            <Route exact path='/login' component={Login} />
+          </div>
+          <Footer />
+        </div>
+      </Router>
+    )
   }
 }
 
-export default App;
+export default App
