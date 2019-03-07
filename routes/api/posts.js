@@ -172,7 +172,6 @@ router.post('/comment/:id', passport.authenticate('jwt', {
     if (!isValid) {
         return res.status(404).json(errors)
     }
-    console.log(req.params.id);
 
     Post.findById(req.params.id)
         .then(post => {
